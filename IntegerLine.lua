@@ -19,6 +19,12 @@ function IntegerParameter:draw()
     fill(225, 221, 192, 255)
     strokeWidth(0)
     ellipse(self.ellipseposition, self.y, 25)
+    
+    fill(255, 157, 0, 255)
+    font("AmericanTypewriter")
+    fontSize(25)
+    text("0", self.x1, self.y - 25)
+    text(self.ellipseposition - (self.x1 + 1), self.x2 - 25, self.y - 25)
 end
 
 function IntegerParameter:touched(touch)
