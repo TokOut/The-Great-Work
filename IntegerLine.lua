@@ -26,8 +26,8 @@ function IntegerParameter:touched(touch)
         print("Touched")
     end
     if touch.state == MOVING and self:hit(vec2(touch.x, touch.y)) then
-        print("Moving to", CurrentTouch.x)
-        self.ellipseposition = CurrentTouch.x
+        print("Moving to", touch.x)
+        self.ellipseposition = touch.x
         print("Have been Moved!")
         cp = self.ellipseposition
         print("Recognized values!")
