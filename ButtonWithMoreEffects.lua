@@ -1,6 +1,6 @@
 Button = class()
 
-function Button:init(name, x, y, action)
+function Button:init(name, x, y, action, w)
     if x == nil or y == nil then
         x = 0
         y = 0
@@ -19,6 +19,7 @@ function Button:init(name, x, y, action)
     self.name = name
     self.action = action
     self.color = color(255, 255, 255, 255)
+    self.w = w
 end
 
 function Button:draw()
@@ -28,7 +29,7 @@ function Button:draw()
     font("AmericanTypewriter")
     fontSize(25)
     textMode(CENTER)
-    text(self.name, self.x + 35, self.y + 35)
+    text(self.name, self.x + self.w/2, self.y + 35)
 end
 
 function Button:touched(t)
@@ -45,12 +46,12 @@ function Button:touched(t)
 end
 
 function Button:hit(p)
-    local t = self.x + 75
+    local t = self.x + self.w
     local b = self.x - 1
     local l = self.y - 1
     local r = self.y + 75
     if p.x > l and p.x < r and p.y > b and p.y < t then
         return true
     end
-        return false
+    return false
 end
