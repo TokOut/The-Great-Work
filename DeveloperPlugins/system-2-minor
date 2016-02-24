@@ -1,0 +1,391 @@
+--# Help
+
+--[[
+------------------------------------------ Globals ------------------------------------------
+
+Boolean(name) -- Booaleans in a button form
+Button(name) -- Buttons in a very nice NEON style
+col( value ) -- You can set easy and fast set the colors (35 colors)
+Constant() -- Includes pi and e and very big numbers
+http.connect( website ) -- This is currently nothing but i plan to use this to develop bots
+http.readHTML( website ) -- This returns the data of website after being connected
+Integer(name, a, b, currentScore) -- An Integer class
+math.factor( value ) -- returns 1 * 2 * 3 * ... * value -- possible till 65, if bigger returns nil
+Triangle(x, y, x2, y2, x3, y3, color) -- Creates a TriAngle
+Vec(x, y, z, w) -- Its just a vector from vec2() to vec3() till vec4()
+WatchParameter(name, data) -- An watch parameter -- Cannot set to userdata or tables
+
+-----------|---------------------------------- Updates ---------------------------------------------
+DEL:        Deleted Constant class
+FIX:        Triangle' class: Now drawing but not supporting the "col("COLOR")" function
+NOTE:       Sorted the globals over at alphabet
+REMOVE:     Removed the roadmap
+HTTP-REQ:   Retranslated to an class. Is now allowing to run self's: h = http.connect("web"); h.website returns web
+MORE:       colors, math.formula
+
+Really tried to fix this: Fixed an bug where the col function wasn't allowed in meshes, and other things
+But: It will work only like this: c = col("COLOR") ; color(c.r, c.g, c.b)
+]]
+
+--# Official
+-- This classes are based for the editor and are official of the "System" work
+system = {}
+system.tableChat = {}
+
+system.init = function()
+    displayMode(OVERLAY)
+    displayMode(FULLSCREEN)
+end
+
+system.draw = function()
+    fill(col("COAL"))
+    strokeWidth(0)
+    rect(WIDTH-200, 0, 200, HEIGHT)
+    for _,v in ipairs(system.tableChat) do v:draw() end
+end
+
+system.tableInsert = function(m)
+    local y = #system.tableChat
+    table.insert(system.tableChat, system.chatBox(m, y))
+end
+
+system.chatBox = function(message, y)
+    
+end
+
+--# Server
+
+http.readHTML = function(website)
+    local function s(data, status, head)
+        print("Sucess connecting to " .. website .. " (Status: " .. status .. ")")
+        return data
+    end
+    
+    local function f(e)
+        print("Error connecting to " .. website .. " for this reason:\n\n" .. e)
+        return [[<html><body>Error while connecting to website</body></html>]]
+    end
+    
+    -- Requestion
+    local h = http.request(website, s, f)
+end
+
+http.connect = class()
+
+function http.connect:init(website)
+    if website == nil then website = "https://codea.io/talk" end
+    
+    self.website = website
+    self.connect = {message = nil, html = nil, headTable = nil, error = nil}
+    
+    --[[
+    sink = LTN12 sink
+    headers = header-table
+    source = LTN12 source
+    step = LTN12 pump step
+    proxy = string
+    create = function
+    ]]
+    
+    local s = function(d, s, h)
+        print("Sucess while connecting to " .. self.website)
+        self.connect.message = "[http] Connected!"
+        self.connect.html = d
+        self.connect.headTable = h
+        self.connect.error = "Website didn't encountered an error"
+    end
+    
+    local e = function(e)
+        print("Error while connecting to " .. self.website .. "\nReason:\n" .. e)
+        self.connect.message = "[http] Failed to connect!"
+        self.connect.html = "<html><b>Error</b>\n" .. e .."\n</html>"
+        self.connect.headTable = {}
+        self.connect.error = e
+    end
+    
+    local h = http.request(self.website, s, e, {redirect = true, method = "GET"})
+end
+
+--# Color
+
+col = function(value)
+    local c = nil
+    -- Color function not allowed in meshes currently. Do this:
+    -- c = col("GREEN")
+    -- mesh.colors = {color(c.r, c.g, c.b, 255)}
+    if value == ("GREEN" or 2) then c = color(0, 255, 0, 255)
+    elseif value == ("BLUE" or 3) then c = color(0, 0, 255, 255)
+    elseif value == "YELLOW" then c = color(255, 255, 0, 255)
+    elseif value == ("RED" or 1) then c = color(255, 0, 0, 255)
+    elseif value == "CYAN" then c = color(0, 255, 255, 255)
+    elseif value == "PINK" then c = color(255, 0, 255, 255)
+    elseif value == "GOLD" then c = color(255, 200, 0, 255)
+    elseif value == "GREY" then c = color(150, 255)
+    elseif value == "WHITE" then c = color(255, 255, 255, 255)
+    elseif value == "BLACK" then c = color(0, 0, 0, 255)
+    elseif value == "PURPLE" then c = color(150, 0, 255, 255)
+    elseif value == "ORANGE" then c = color(255, 150, 0, 255)
+    elseif value == "LIGHT_BLUE" then c = color(0, 100, 255, 255)
+    elseif value == "BROWN" then c = color(100, 50, 25, 255)
+    elseif value == "SAND" then c = color(200, 150, 100, 255)
+    elseif value == "STONE_ROSA" then c = color(175, 125, 125, 255)
+    elseif value == "ROSA" then c = color(200, 100, 175, 255)
+    elseif value == "LIGHT_GREEN" then c = color(50, 255, 100, 255)
+    elseif value == "DIAMOND" then c = color(150, 150, 255, 255)
+    elseif value == "DIAMOND_DARK" then c = color(125, 100, 150, 255)
+    elseif value == "COAL" then c = color(60, 255)
+    elseif value == "LIGHT_GREY" then c = color(150, 255)
+    elseif value == "GREEN_GREY" then c = color(100, 125, 100, 255)
+    elseif value == "MAGIC1" then c = color(100, 75, 125, 255)
+    elseif value == "MAGIC2" then c = color(150, 100, 125, 255)
+    elseif value == "MAGIC3" then c = color(75, 50, 125, 255)
+    elseif value == "MAGIC4" then c = color(175, 150, 175, 255)
+    elseif value == "MAGIC5" then c = color(125, 25, 125, 255)
+    elseif value == "LAVA1" then c = color(255, 75, 0, 255)
+    elseif value == "LAVA2" then c = color(255, 200, 0, 255)
+    elseif value == "LAVA3" then c = color(255, 255, 0, 255)
+    elseif value == "LAVA4" then c = color(100, 50, 50, 255)
+    elseif value == "LAVA5" then c = color(200, 200, 0, 255)
+    elseif value == "DARK_BLUE" then c = color(50, 75, 125, 255)
+    elseif value == "GREEN_GRAY" then c = color(125, 200, 150, 255)
+    elseif value == "STRAW" then c = color(171, 188, 97, 255)
+    elseif value == "DARK_GREEN" then c = color(40, 126, 55, 255)
+    else c = color(127, 127, 127, 255)
+    end return c
+end
+
+--# Math
+
+math.e = 2.71828182845904
+math.factor = function(value)local id = value if id == 0 then return 1 else return id * math.factor(id - 1) end end
+math.formula = {}
+math.formula.stringN = {}
+math.formula.action = {}
+math.formula.graphs = {}
+math.formula.graphs.count = {}
+
+math.formula.stringN.factorial = "1 * 2 * 3 * ... * (n - 1) * n"
+math.formula.stringN.random = "1, 2, 3, ... , (n - 1) or n"
+math.formula.stringN.natural = "N = {-n; ...; -3; -2; -1; 0; 1; 2; 3; ...; n}"
+math.formula.stringN.aplb = "(a+b)(a+b) = aa + 2ab + bb"
+math.formula.stringN.aplmib = "(a+b)(a-b) = aa - bb"
+math.formula.stringN.amib = "(a-b)(a-b) = aa + bb - 2ab"
+math.formula.stringN.aplb2 = "(a+b)(aaa+bbb+ab) = aaaa + abbb + aab + baaa + bbbb + abb"
+
+math.formula.action.aplb = function(a, b) local z = (a + b) ^ 2 return z end -- a plus b
+math.formula.action.aplmib = function(a, b) local z = (a + b) * (a - b) return z end -- a plus minus b
+math.formula.action.amib = function(a, b) local z = (a - b) ^ 2 return z end -- a minus b
+math.formula.action.aplb2 = function(a, b) local z = (a + b) * (a*3 + b*3 + a*b) return z end -- a plus b
+math.formula.action.aplmib2 = function(a, b) local z = (a + b) * (a*3 - b*3 + a*b) return z end -- a plus minus
+math.formula.action.amiplb2 = function(a, b) local z = (a - b) * (a*3 + b*3 + a*b) return z end -- a minus plus b
+math.formula.action.random = function(min, max) local z = math.random(min, max) return z end
+
+math.formula.graphs.count.vfe = function(v,f,e)local z=v+f-e if z==2 then return true else return false end end
+
+math.formula.graphs.vfe = "The V+F-E=2 helps to understand the format of the graph. vertex, face and edge, if their not true means that v+f-e = not 2, what means the graph cant exist or two lines will across (x)."
+math.formula.graphs.full = "A graph is called full if every edge is connected to every vertex."
+math.formula.graphs.flat = "A graph is flat if his V + F - E equals 2."
+
+--# Classes
+
+Vec = class()
+
+function Vec:init(x, y, z, w)
+    if x==nil then x=0 y=0 z=0 w=0 end
+    if y==nil then y=0 z=0 w=0 end
+    if z==nil then z=0 w=0 end
+    if w==nil then w=0 end
+    self.x = x
+    self.y = y
+    self.z = z
+    self.w = w
+end
+
+Body = class()
+
+function Body:init()
+    self.physic = physics.body(CIRCLE, 100)
+    self.physic.x, self.physic.y = WIDTH/2, WIDTH/2
+    self.physic.gravityScale = 0.75
+end
+
+function Body:draw()
+    fill(col("YELLOW"))
+    ellipse(self.physic.x, self.physic.y, 100)
+end
+
+TriAngle = class()
+
+function TriAngle:init(x, y, x2, y2, x3, y3)
+    self.xa = x
+    self.xb = x2
+    self.xc = x3
+    self.ya = y
+    self.yb = y2
+    self.yc = y3
+    self.body = mesh()
+    self.body.vertices = {vec3(self.xa, self.ya, 0), vec3(self.xb, self.yb, 0), vec3(self.xc, self.yc, 0)}
+    self.body.colors = {color(255, 0, 0, 255), color(0, 0, 255, 255), color(0, 255, 0, 255)}
+end
+
+function TriAngle:draw()
+    self.body:draw()
+end
+
+--# Button
+
+Button = class()
+
+function Button:init(name)
+    self.display = name
+    self.pos = Vec(0, 0)
+    self.size = Vec(200, 50)
+    self.action = nil
+    self.touch = false
+    self.color = col("CYAN")
+end
+
+function Button:draw()
+    fill(col("COAL"))
+    if self.touch then fill(col("GREY")) end
+    strokeWidth(2)
+    stroke(self.color)
+    fontSize(15)
+    rect(self.pos.x, self.pos.y, self.size.x, self.size.y)
+    fill(self.color)
+    text(self.display, self.pos.x + self.size.x/2, self.pos.y + self.size.y/2)
+end
+
+function Button:touched(p)
+    local r = self.pos.x + self.size.x
+    local l = self.pos.x
+    local b = self.pos.y
+    local t = self.pos.y + self.size.y
+    if p.state == BEGAN and p.x>l and p.x<r and p.y>b and p.y<t then
+        self.touch = true
+    elseif p.state == ENDED then
+        self.touch = false
+        if p.x>l and p.x<r and p.y>b and p.y<t and self.action then
+            self.action()
+        end
+    end
+end
+
+--# Boolean
+
+Boolean = class()
+
+function Boolean:init(name, en)
+    if en == nil then en = false end
+    self.pos = Vec(0, 0)
+    self.size = Vec(200, 50)
+    self.display = name
+    self.enabled = en
+    self.color = col("CYAN")
+end
+
+function Boolean:draw()
+    fill(col("COAL"))
+    if self.enabled then fill(col("GREY")) end
+    strokeWidth(2)
+    stroke(self.color)
+    fontSize(15)
+    rect(self.pos.x, self.pos.y, self.size.x, self.size.y)
+    fill(self.color)
+    text(self.display, self.pos.x + self.size.x/3, self.pos.y + self.size.y/2)
+    if self.enabled then fill(col("GOLD")) else fill(col("BLACK")) end
+    ellipse(self.pos.x + self.size.x * 9/12, self.pos.y + self.size.y/2, 40)
+end
+
+function Boolean:touched(p)
+    local l = self.pos.x
+    local r = self.pos.x + self.size.x
+    local t = self.pos.y + self.size.y
+    local b = self.pos.y
+    
+    if p.state == ENDED and p.x>l and p.x<r and p.y>b and p.y<t then
+        if self.enabled then
+            self.enabled = false
+        else
+            self.enabled = true
+        end
+    end
+end
+
+--# Watch
+
+WatchParameter = class()
+
+function WatchParameter:init(value, des)
+    if value == nil then value = "nil" end
+    if des == nil then des = "NIL" end
+    self.pos = Vec(0, 0)
+    self.value = value
+    self.size = Vec(200, 50)
+    self.description = des
+end
+
+function WatchParameter:draw()
+    if self.description == nil then
+        self.description = "{Value is a nil value}"
+    elseif self.description == true then
+        self.description = "true"
+    elseif self.description == false then
+        self.description = "false"
+    elseif self.description == TEXT then
+        self.description = self.description
+    elseif type(self.description) == "userdata" then
+        self.description = "Error: Got USERDATA"
+    elseif type(self.description) == "table" then
+        self.description = #self.description .. " table data"
+    elseif type(self.description) == "function" then
+        self.description = "Error: Got FUNCTION"
+    end
+    strokeWidth(2)
+    stroke(col("CYAN"))
+    fill(col("COAL"))
+    rect(self.pos.x, self.pos.y, self.size.x, self.size.y)
+    fontSize(15)
+    fill(col("CYAN"))
+    text(self.value, self.pos.x + self.size.x/2, self.pos.y + self.size.y/12*9)
+    fill(col("GOLD"))
+    text(self.description, self.pos.x + self.size.x/2, self.pos.y + self.pos.y /12*0.75)
+end
+
+--# Integer
+
+Integer = class()
+
+function Integer:init(name, minimum, maximum, currentNumber)
+    self.value = name
+    self.min = minimum
+    self.max = maximum
+    self.cur = currentNumber
+    self.pos = Vec(0, 0)
+    self.size = Vec(200, 50)
+end
+
+function Integer:draw()
+    strokeWidth(2)
+    stroke(col("CYAN"))
+    fill(col("COAL"))
+    rect(self.pos.x, self.pos.y, self.size.x, self.size.y)
+    fill(col("CYAN"))
+    text(self.value, self.pos.x + self.size.x/2, self.pos.y + self.size.y/12*9)
+    fill(col("LAVA1"))
+    fontSize(20)
+    text("-           " .. self.cur .. "           +", self.pos.x + self.size.x/2, self.pos.y + 15)
+end
+
+function Integer:touched(t)
+    local xy = Vec(self.pos.x, self.pos.y)
+    local wh = Vec(self.pos.x + self.size.x, self.pos.y + self.size.y)
+    local mid = Vec(self.pos.x + self.size.x/2, self.pos.y + self.size.y/2)
+    if t.state == ENDED and t.x > xy.x and t.y > xy.y and t.x < wh.x and t.y < wh.y then
+        if t.x<mid.x and self.cur > self.min then
+            self.cur = self.cur - 1
+        elseif t.x>mid.x and self.cur < self.max then
+            self.cur = self.cur + 1
+        end
+    end
+end
