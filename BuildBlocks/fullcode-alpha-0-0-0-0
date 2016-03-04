@@ -1,0 +1,348 @@
+
+--# Main
+
+function setup()
+    -- The initial start function
+    project.init("Build Blocks", "0.0.0 beta", "Anatoly")
+end
+
+function draw()
+    -- Repeats 60 times a second -> Initial drawings
+    background(0, 0, 0, 255)
+    project.draw()
+end
+
+function touched(touchData)
+    -- Recognizes touches
+    project.touch(touchData)
+end
+
+function keyboard(keyboardData)
+    -- Used for keyboards
+    project.key(keyboardData)
+end
+
+function register()
+    if project.current.register[1].bool == true and #project.current.registerText[1].currentText >= 1 and #project.current.registerText[1].currentText < 30 and #project.current.registerText[2].currentText >= 1 and #project.current.registerText[3].currentText > 5 then
+        project.userdata.name = project.current.registerText[1].currentText
+        project.userdata.rank = 1
+        project.page = 1
+    end
+end
+
+--# Project
+-- Project
+project = {}
+project.lib = {}
+project.data = {}
+project.data.font = {}
+project.data.color = {}
+project.userdata = {}
+project.current = {}
+project.data.terms = [[
+• Be nice to moderators
+• Be nice to everyone
+]]
+-- Worlds
+worlds = {}
+
+function project.init(name, version, gamesOwner)
+    displayMode(FULLSCREEN)
+    supportedOrientations(LANDSCAPE_ANY)
+    -- Game Official data
+    project.data.name = name
+    project.data.ver = version
+    project.data.own = gamesOwner
+    project.data.des = "– Game powered by " .. project.data.own
+    -- Game Fonts
+    project.data.font.basic = "Baskerville-Bold"
+    project.data.font.inGame = "ArialMT"
+    project.data.font.library = "AmericanTypewriter"
+    -- Game colors
+    project.data.color.neutral = color(255, 255, 255, 255)
+    project.data.color.negative = color(75, 255)
+    project.data.color.admin = color(255, 175, 0, 255)
+    -- Current Page [1=lobby, 2=world, 3=shop, 4=register]
+    project.page = 1
+    -- User Data
+    project.userdata.name = "guest" -- guest name
+    project.userdata.rank = 0 -- 0 chatbanned/guest, 1 normal, 2 developer/moderator/operator
+    -- Current Data
+    project.current.worlds = {}
+    project.current.register = {project.lib.check(100, 150, false), project.lib.button("Register!", function() register() end, 250, 100), project.lib.button("Read them here", function() alert(project.data.terms, "Terms of Service") end, 350, 100, 200, 50)}
+    project.current.registerText = {project.lib.textbox("User Name", 50, HEIGHT-250, 400, 50), project.lib.textbox("E-Mail", 50, HEIGHT-325, 400, 50), project.lib.passbox(50, HEIGHT-400, 400, 50)}
+    -- Other Table "worlds"
+    
+end
+
+function project.draw()
+    if project.page == 1 then
+        project.registerButton = project.lib.button("Register", function() project.page = 4 end, 300, 250)
+        project.lobbyPage()
+    elseif project.page == 2 then
+        
+    elseif project.page == 3 then
+        
+    elseif project.page == 4 then
+        project.registerPage()
+        for _,v in ipairs(project.current.register) do v:draw() end
+        for _,v in ipairs(project.current.registerText) do v:draw() end
+    end
+end
+
+function project.touch(touch)
+    if project.page == 1 then
+        project.lobbyPageTouch(touch)
+    elseif project.page == 2 then
+        
+    elseif project.page == 3 then
+        
+    elseif project.page == 4 then
+        for _,v in ipairs(project.current.register) do v:touched(touch) end
+        for _,v in ipairs(project.current.registerText) do v:touched(touch) end
+    end
+end
+
+function project.key(k)
+    if project.page == 4 then
+        for _,v in ipairs(project.current.registerText) do v:keyboard(k) end
+    elseif project.page == 2 then
+        
+    end
+end
+
+--# Pages
+function project.lobbyPage()
+    -- Drawings
+    fill(0, 0, 0, 255)
+    stroke(0, 255, 255, 255)
+    strokeWidth(5)
+    rect(275, 25, WIDTH-300, HEIGHT-200)
+    rect(25, 25, 225, HEIGHT-200)
+    rect(25, HEIGHT-150, WIDTH-50, 125)
+    fill(255, 125, 0, 255)
+    fontSize(35)
+    font(project.data.font.basic)
+    local t,_ = textSize(project.data.name)
+    text(project.data.name, 40 + t/2, HEIGHT - 55)
+    fontSize(25)
+    fill(127, 127, 127, 255)
+    local t2,_ = textSize(project.data.des)
+    text(project.data.des, 50 + t + t2/2, HEIGHT - 58.5)
+    if project.userdata.rank == 0 then fill(project.data.color.negative)
+    elseif project.userdata.rank == 1 then fill(project.data.color.neutral)
+    elseif project.userdata.rank == 2 then fill(project.data.color.admin) end
+    fontSize(60)
+    local t,_ = textSize(project.userdata.name)
+    text(project.userdata.name, WIDTH-40-t/2, HEIGHT-200)
+    -- Important
+    fontSize(25)
+    fill(255, 255, 255, 255)
+    if (project.userdata.rank == 0 and project.userdata.name == "guest") or (project.userdata.rank == 0 and project.userdata.name == "BANNED") then
+        local txt = "Welcome to " .. project.data.name .. "!\nRegister to get more features!\nVersion " .. project.data.ver .. "\n\nUNLOCKED AFTER REGISTRATION\n • Shop Acess and the acess to buy beta.\n • Acess to have a username.\n • Information about updates, and their data.\n • Acess to own worlds, items and smileys"
+        local t,t2 = textSize(txt)
+        text(txt, 295+t/2, HEIGHT-190-t2/2)
+        project.registerButton:draw()
+    else
+        
+    end
+end
+
+function project.lobbyPageTouch(t)
+    if (project.userdata.rank == 0 and project.userdata.name == "guest") or (project.userdata.rank == 0 and project.userdata.name == "permament baned") then
+        project.registerButton:touched(t)
+    end
+end
+
+function project.registerPage()
+    fill(255, 255, 255, 255)
+    rect(25, 25, WIDTH-50, HEIGHT-50)
+    fill(0, 0, 0, 255)
+    fontSize(35)
+    font("Baskerville")
+    text("Register new Acount", WIDTH/2, HEIGHT-60)
+    fontSize(20)
+    font("AmericanTypewriter")
+    text("I agree with the terms of service", WIDTH/2-150, 172.5)
+    text("Everyone will know you as this person", WIDTH-350, HEIGHT-225)
+    text("The registered e-mail", WIDTH-432.5, HEIGHT-300)
+end
+
+
+--# Worlds
+worlds.box = class()
+
+function worlds.box:init()
+    
+end
+
+function worlds.box:draw()
+    
+end
+
+function worlds.box:touched(t)
+    
+end
+
+--# Button
+project.lib.button = class()
+
+function project.lib.button:init(name, f, x, y, w, h)
+    if (w or h) == nil then w, h = 100, 50 end
+    if (x or y) == nil then x, y = 0, 0 end
+    if name == nil then name = "Button" end
+    if f == nil then f = function() print("project.lib.button activated") end end
+    self.display = name
+    self.pos = vec2(x, y)
+    self.size = vec2(w, h)
+    self.action = f
+end
+
+function project.lib.button:draw()
+    fill(0, 0, 0, 255)
+    rect(self.pos.x, self.pos.y, self.size.x, self.size.y)
+    fill(255, 255, 255, 255)
+    fontSize(20)
+    font(project.data.font.library)
+    text(self.display, self.pos.x + self.size.x/2, self.pos.y + self.size.y/2)
+end
+
+function project.lib.button:touched(t)
+    local p1 = vec2(self.pos.x, self.pos.y)
+    local p2 = vec2(self.pos.x + self.size.x, self.pos.y + self.size.y)
+    if t.x>p1.x and t.x<p2.x and t.y>p1.y and t.y<p2.y and t.state == BEGAN then
+        self.action()
+    end
+end
+
+--# CheckBox
+project.lib.check = class()
+
+function project.lib.check:init(x, y, value)
+    self.pos = vec2(x, y)
+    self.bool = value
+end
+
+function project.lib.check:draw()
+    stroke(0, 0, 0, 255)
+    fill(200, 255)
+    rect(self.pos.x, self.pos.y, 50, 50)
+    if self.bool then
+        line(self.pos.x, self.pos.y, self.pos.x + 50, self.pos.y + 50)
+        line(self.pos.x + 50, self.pos.y, self.pos.x, self.pos.y + 50)
+    end
+end
+
+function project.lib.check:touched(t)
+    if t.x>self.pos.x and t.x<self.pos.x + 50 and t.y>self.pos.y and t.y<self.pos.y + 50 and t.state == BEGAN then
+        if self.bool then
+            self.bool = false
+        else
+            self.bool = true
+        end
+    end
+end
+
+--# TextBox
+project.lib.textbox = class()
+
+function project.lib.textbox:init(comment, x, y, w, h)
+    if (w or h) == nil then w, h = 350, 60 end
+    self.currentText = ""
+    self.comment = comment
+    self.pos = vec2(x, y)
+    self.size = vec2(w, h)
+    self.selected = false
+end
+
+function project.lib.textbox:draw()
+    fill(255, 255, 255, 255)
+    stroke(0, 0, 255, 255)
+    rect(self.pos.x, self.pos.y, self.size.x, self.size.y)
+    font(project.data.font.library)
+    local t,_ = textSize(self.currentText)
+    local t2,_ = textSize(self.comment)
+    fill(0, 0, 0, 255)
+    text(self.currentText, self.pos.x+t/2+15, self.pos.y+self.size.y/2)
+    if #self.currentText == 0 then
+        fill(127, 127, 127, 255)
+        text(self.comment, self.pos.x+t2/2+10, self.pos.y+self.size.y/2)
+    end
+end
+
+function project.lib.textbox:touched(t)
+    if t.x>self.pos.x and t.x<self.pos.x+self.size.x and t.y>self.pos.y and t.y<self.pos.y+self.size.y then
+        self.selected = true
+        showKeyboard()
+    else
+        self.selected = false
+        hideKeyboard()
+    end
+end
+
+function project.lib.textbox:keyboard(k)
+    if self.selected then
+        if k == BACKSPACE then
+            self.currentText = string.sub(self.currentText, 1, #self.currentText-1)
+        elseif k == RETURN then
+            hideKeyboard()
+            self.selected = false
+        else
+            self.currentText = self.currentText .. k
+        end
+    end
+end
+
+--# PassBox
+project.lib.passbox = class()
+
+function project.lib.passbox:init(x, y, w, h)
+    if (w or h) == nil then w, h = 350, 60 end
+    self.currentText = ""
+    self.pos = vec2(x, y)
+    self.size = vec2(w, h)
+    self.selected = false
+    self.stars = ""
+end
+
+function project.lib.passbox:draw()
+    fill(255, 255, 255, 255)
+    stroke(0, 0, 255, 255)
+    rect(self.pos.x, self.pos.y, self.size.x, self.size.y)
+    font(project.data.font.library)
+    local t,_ = textSize(self.currentText)
+    local t2,_ = textSize("******")
+    fill(0, 0, 0, 255)
+    text(self.stars, self.pos.x+self.size.x/2, self.pos.y+self.size.y/2)
+    if #self.currentText == 0 then
+        fill(127, 127, 127, 255)
+        text("******", self.pos.x+t2/2+10, self.pos.y+self.size.y/2)
+    elseif self.selected then
+        text("DATA; " .. self.stars, WIDTH/2, HEIGHT-100)
+    end
+end
+
+function project.lib.passbox:touched(t)
+    if t.x>self.pos.x and t.x<self.pos.x+self.size.x and t.y>self.pos.y and t.y<self.pos.y+self.size.y then
+        self.selected = true
+        showKeyboard()
+    else
+        self.selected = false
+        hideKeyboard()
+    end
+end
+
+function project.lib.passbox:keyboard(k)
+    if self.selected then
+        if k == BACKSPACE then
+            self.currentText = string.sub(self.currentText, 1, #self.currentText-1)
+            self.stars = string.sub(self.stars, 1, #self.currentText-1)
+        elseif k == RETURN then
+            hideKeyboard()
+            self.selected = false
+        else
+            self.currentText = self.currentText .. k
+            self.stars = self.stars .. "*"
+        end
+    end
+end
